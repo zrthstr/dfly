@@ -1,0 +1,5 @@
+*.img
+*.iso
+*.bz2
+workdir/*
+md5.txt

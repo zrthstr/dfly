@@ -1,0 +1,60 @@
+#!/bin/bash
+
+
+ISO_FILENAME="dfly-x86_64-4.8.0_REL.iso.bz2"
+#ISO_FILENAME="dfly-x86_64-4.8.0_REL.img.bz2"
+ISO_URL="http://mirror-master.dragonflybsd.org/iso-images/"${ISO_FILENAME}
+
+# some bashes dont like this..
+#ISO_UNPACKED=${ISO_FILENAME:0:-4}
+ISO_UNPACKED=$(echo -n $ISO_FILENAME | sed "s/\.bz2//g")
+
+MD5_FILENAME="md5.txt"
+MD5_URL="https://avalon.dragonflybsd.org/iso-images/"${MD5_FILENAME}
+
+WORKDIR="workdir"
+
+
+if [ ! -f $ISO_FILENAME ]; then
+    echo "ISO File: ${ISO_FILENAME} not found!"
+    wget $ISO_URL
+else
+    echo "ISO found: ${ISO_FILENAME}"
+fi
+
+
+if [ ! -f $MD5_FILENAME ]; then
+    echo "MD5 File: ${MD5_FILENAME} not found!"
+    wget $MD5_URL
+else
+    echo "MD5 file found: ${MD5_FILENAME}"
+fi
+
+
+MD5SUM=$(md5 -q $ISO_FILENAME)
+echo md5sum of is is $MD5SUM
+
+grep $MD5SUM $MD5_FILENAME 
+
+if [ $? == "0" ] 
+then
+    echo "md5sum found in md5file"
+else
+    echo "NOT OK. md5sum of image not found in file. quiting"
+    exit
+fi
+
+
+if [ ! -f $ISO_UNPACKED ]; then
+    echo "ISO File: ${ISO_UNPACKED} not found!"
+    bzip2 -dk $ISO_FILENAME
+else
+    echo "unpacked iso file found: ${ISO_UNPACKED}"
+fi
+
+
+
+#mkdir $WORKDIR
+
+#cd $WORKDIR
+
